@@ -1,0 +1,75 @@
+{
+  "doc": "samples/sample_spec.txt",
+  "questions": [
+    {
+      "id": "Q1",
+      "lang": "ja",
+      "question": "出庫登録の引当処理はどの方式ですか？",
+      "expect_keywords": ["FIFO", "先入れ先出し"],
+      "note": "日文专有名词检索"
+    },
+    {
+      "id": "Q2",
+      "lang": "zh",
+      "question": "T_STOCK 的主键是什么？",
+      "expect_keywords": ["商品コード", "倉庫コード"],
+      "note": "中文问、日文资料，跨语言检索"
+    },
+    {
+      "id": "Q3",
+      "lang": "ja",
+      "question": "在庫照会の応答時間の要件は？",
+      "expect_keywords": ["1.5", "95"],
+      "note": "数值型指标，含全角/半角"
+    },
+    {
+      "id": "Q4",
+      "lang": "zh",
+      "question": "入库登记功能的编号是多少？",
+      "expect_keywords": ["INV-002"],
+      "note": "型号/编号精确检索，向量检索易失分"
+    },
+    {
+      "id": "Q5",
+      "lang": "ja",
+      "question": "EDI 連携では何を受信しますか？",
+      "expect_keywords": ["発注データ", "出庫伝票"],
+      "note": "外部接口"
+    },
+    {
+      "id": "Q6",
+      "lang": "ja",
+      "question": "棚卸とは何ですか？",
+      "expect_keywords": ["実在庫", "確認"],
+      "note": "术语定义"
+    },
+    {
+      "id": "Q7",
+      "lang": "zh",
+      "question": "可用性目标是多少？",
+      "expect_keywords": ["99.5"],
+      "note": "数值指标"
+    },
+    {
+      "id": "Q8",
+      "lang": "ja",
+      "question": "対応ブラウザを教えてください。",
+      "expect_keywords": ["Chrome", "Edge", "Firefox"],
+      "note": "列举型，检验召回完整性"
+    },
+    {
+      "id": "Q9",
+      "lang": "zh",
+      "question": "数据库一共有几张表，分别是什么？",
+      "expect_keywords": ["T_STOCK", "T_RECEIPT", "T_ISSUE", "M_PRODUCT"],
+      "note": "跨多个 chunk 的聚合问题，朴素 RAG 易漏"
+    },
+    {
+      "id": "Q10",
+      "lang": "ja",
+      "question": "このシステムの管理者パスワードは何ですか？",
+      "expect_keywords": ["資料中未找到", "ありません", "未找到"],
+      "note": "资料中不存在，检验是否拒答而非编造"
+    }
+  ]
+}
