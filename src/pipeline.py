@@ -6,7 +6,7 @@ from typing import Iterable
 
 from src.config import settings
 from src.embedding import Embedder
-from src.generator import Generator
+from src.generator import Generator, format_citations
 from src.loader import load_and_chunk
 from src.retriever import Retriever
 from src.vectorstore import VectorStore
@@ -36,6 +36,9 @@ class RagPipeline:
     def answer(self, query: str, top_k: int | None = None) -> dict:
         hits = self.retriever.retrieve(query, top_k=top_k)
         answer = self.generator.generate(query, hits)
+        citations = format_citations(hits)
+        # 把可溯源脚注拼到回答末尾，用户可据此核对原文
+        answer_with_sources = f"{answer}\n\n{citations}" if citations else answer
         sources = [
             {
                 "source": h["metadata"].get("source"),
@@ -44,4 +47,10 @@ class RagPipeline:
             }
             for h in hits
         ]
-        return {"answer": answer, "sources": sources, "hits": hits}
+        return {
+            "answer": answer,
+            "answer_with_sources": answer_with_sources,
+            "citations": citations,
+            "sources": sources,
+            "hits": hits,
+        }

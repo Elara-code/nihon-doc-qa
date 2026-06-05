@@ -39,6 +39,27 @@ def build_user_prompt(query: str, hits: list[dict]) -> str:
     )
 
 
+def format_citations(hits: list[dict]) -> str:
+    """把命中 chunk 的来源去重后排成可溯源脚注。
+
+    同一文件同一页只出现一次，保持检索命中的先后顺序。
+    """
+    seen: set[tuple[str, object]] = set()
+    items: list[str] = []
+    for hit in hits:
+        meta = hit.get("metadata", {})
+        src = meta.get("source", "?")
+        page = meta.get("page", "?")
+        key = (src, page)
+        if key in seen:
+            continue
+        seen.add(key)
+        items.append(f"{src} 第{page}页")
+    if not items:
+        return ""
+    return "依据：" + "；".join(items)
+
+
 class Generator:
     def __init__(self) -> None:
         if not settings.llm_api_key:
