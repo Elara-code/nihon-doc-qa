@@ -3,14 +3,18 @@
 - PDF 走 PyMuPDF (fitz)，按页提取文本，并保留页码。
 - 同时支持 .txt 方便没有 PDF 时也能跑通链路。
 - 切块策略：固定窗口 + 重叠，按字符数滑动；对中日文档比按 token 更直观。
+- Week 2：提取后统一做中日文本规整（NFKC、清杂散空格），并对疑似乱码页告警。
 """
 from __future__ import annotations
 
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable
 
 import fitz  # PyMuPDF
+
+from src.text_utils import looks_garbled, normalize_text
 
 
 @dataclass
@@ -28,13 +32,19 @@ def _read_pdf_pages(path: Path) -> list[tuple[int, str]]:
     pages: list[tuple[int, str]] = []
     with fitz.open(path) as doc:
         for i, page in enumerate(doc, start=1):
-            text = page.get_text("text") or ""
-            pages.append((i, text))
+            raw = page.get_text("text") or ""
+            if looks_garbled(raw):
+                warnings.warn(
+                    f"{path.name} 第 {i} 页疑似提取乱码（字体可能缺 ToUnicode 映射），"
+                    f"建议对该 PDF 做 OCR 或换提取方式。",
+                    stacklevel=2,
+                )
+            pages.append((i, normalize_text(raw)))
     return pages
 
 
 def _read_txt_pages(path: Path) -> list[tuple[int, str]]:
-    return [(1, path.read_text(encoding="utf-8"))]
+    return [(1, normalize_text(path.read_text(encoding="utf-8")))]
 
 
 def read_document(path: str | Path) -> list[tuple[int, str]]:
