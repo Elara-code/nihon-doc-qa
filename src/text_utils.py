@@ -20,6 +20,11 @@ _CJK_PATTERN = re.compile(
 _CJK_SPACE_CJK = re.compile(
     r"(?<=[぀-ヿ㐀-䶿一-鿿])[ \t]+(?=[぀-ヿ㐀-䶿一-鿿])"
 )
+# 两个 CJK 字符之间的单个换行（日文 PDF 按视觉行提取的伪换行，
+# 会把 "国際電気/標準会議" 这种段内词组打断；保留 \n\n+ 这类真段落分隔）。
+_CJK_NEWLINE_CJK = re.compile(
+    r"(?<=[぀-ヿ㐀-䶿一-鿿])[ \t]*\n[ \t]*(?=[぀-ヿ㐀-䶿一-鿿])"
+)
 # 控制字符与 Unicode 替换字符（乱码信号）
 _GARBLED_PATTERN = re.compile(r"[�\x00-\x08\x0b\x0c\x0e-\x1f]")
 
@@ -30,6 +35,8 @@ def normalize_text(text: str) -> str:
         return ""
     # NFKC：全角→半角、兼容字符归一
     text = unicodedata.normalize("NFKC", text)
+    # 清掉 CJK 字符之间的伪换行（按视觉行提取造成的段内换行）
+    text = _CJK_NEWLINE_CJK.sub("", text)
     # 清掉 CJK 字符之间的杂散空格
     text = _CJK_SPACE_CJK.sub("", text)
     # 行内多个空格压成一个
