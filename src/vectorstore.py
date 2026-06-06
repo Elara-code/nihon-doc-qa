@@ -54,12 +54,24 @@ class VectorStore:
             n_results=top_k,
         )
         hits: list[dict] = []
+        ids = result.get("ids", [[]])[0]
         docs = result.get("documents", [[]])[0]
         metas = result.get("metadatas", [[]])[0]
         dists = result.get("distances", [[]])[0]
-        for text, meta, dist in zip(docs, metas, dists):
-            hits.append({"text": text, "metadata": meta, "distance": dist})
+        for _id, text, meta, dist in zip(ids, docs, metas, dists):
+            hits.append({"id": _id, "text": text, "metadata": meta, "distance": dist})
         return hits
+
+    def get_all(self) -> list[dict]:
+        """取出集合内全部 chunk，供 BM25 索引重建（与向量库共用同一份数据）。"""
+        result = self.collection.get(include=["documents", "metadatas"])
+        ids = result.get("ids", [])
+        docs = result.get("documents", [])
+        metas = result.get("metadatas", [])
+        return [
+            {"id": _id, "text": text, "metadata": meta}
+            for _id, text, meta in zip(ids, docs, metas)
+        ]
 
     def count(self) -> int:
         return self.collection.count()
