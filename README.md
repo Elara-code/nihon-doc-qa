@@ -2,10 +2,24 @@
 
 > 一个面向对日 IT 项目场景的 RAG 系统：上传日文 / 中日混排技术文档（设计书、规格书、操作手册），用自然语言提问，系统基于文档内容用中日双语回答，并标注来源出处。
 
-<!-- 这里建议放一张 demo.gif 演示录屏 -->
-![演示](docs/demo.gif)
+## 演示
 
-> 在线体验：<这里放 Hugging Face Spaces 链接>
+![整体界面](docs/screenshots/01-overview.png)
+
+### 同一道日文问题，切换检索模式，结果不同
+
+| rerank（默认） | vector（基线） |
+|---|---|
+| ![](docs/screenshots/03-rerank-answer.png) | ![](docs/screenshots/04-vector-vs-rerank.png) |
+| ✅ `エコセメントの経済効果試算額は **5920億4百万円** です（[1] p.61）。` | ❌ `資料中未找到相关内容。` |
+
+> 同一份 264 chunk 的日文 PDF、同一道问题——纯向量检索找不到深埋第 61 页的数值；
+> rerank 模式（向量 + BM25 RRF 融合 + 交叉编码器精排）准确召回并回答。
+>
+> **测试集 12 题：关键词命中率 67% → 92%（+25pp）；LLM-as-judge 通过率 83% → 92%**。
+> 评估方法详见 [`docs/evaluation-report.md`](docs/evaluation-report.md) 和 [`docs/week3-notes.md`](docs/week3-notes.md)。
+
+> 🚧 在线试用：将在 Week 5 部署到 Hugging Face Spaces 后补充链接。
 
 ---
 
