@@ -1,94 +1,77 @@
-# 演示录屏 / 截图脚本（Day 20）
+# 演示素材脚本（Day 20）
 
-> 目标：1-2 分钟的 demo 视频（或 GIF）+ 几张关键截图，放进 README。
-> 时长不超 2 分钟，节奏紧凑。**先打开 .env、确认 API key 填好**。
+> 目标：4 张关键截图放进 README，让面试官 5 秒看懂"做了 RAG 优化对比"。
+> 视频不是必须——HR 简历筛选阶段几乎不会点视频；真正的"动态 demo"
+> 留给 Week 5 部署到 Hugging Face Spaces 的在线链接。
 
-## 录屏前的准备
+## 截图清单（4 张，按 README 出现顺序）
 
-1. 浏览器窗口拖到 1280×800 左右（GIF 体积友好，README 渲染清晰）。
-2. 关掉 macOS 通知（钉钉/微信/系统提示），避免遮挡或意外弹窗。
-3. 终端字号调大（讲解时观众看得清）。
-4. 启动应用：
+放进 `docs/screenshots/`，命名建议如下：
 
-   ```bash
-   streamlit run app.py
-   ```
+| # | 文件名 | 内容 | 价值 |
+|---|--------|------|------|
+| 1 | `01-overview.png` | 整体界面（空态，侧栏 + 主区都在画面） | 体现简约 UI 设计 |
+| 2 | `02-ingest.png` | 入库完成的状态（绿色提示 "已入库 1 份 / 264 chunks · 49.4s"） | 证明文档处理链路 |
+| 3 | `03-rerank-answer.png` | 用 rerank 模式问 `エコセメントの経済効果試算額はいくらですか？`，答案 5920億4百万円 + 多页出处 + chip 元数据 | 证明回答正确且可溯源 |
+| 4 | `04-vector-vs-rerank.png` | 切到 vector 模式重问同一题，**vector 答"未找到"在上、rerank 答对在下同框出现**（历史栈天然形成 before/after） | **🔥 一张图讲完优化叙事** |
 
-   首次会加载 bge-m3 / reranker（看到「正在加载模型」spinner 转完）。
+> 第 4 张是杀手锏——历史回答栈把 vector ❌ 和 rerank ✅ 在同一屏内同时呈现，
+> 面试官 2 秒就懂。
 
-## 录屏脚本（1 分 30 秒）
+## 怎么拍这 4 张（macOS）
 
-| 时间 | 屏幕动作 | 旁白要点（可不录音，只走画面） |
-|------|---------|---------|
-| 0:00-0:10 | 显示空界面 | "对日技术文档 RAG 问答系统，中日双语，可溯源" |
-| 0:10-0:25 | 左侧上传 `samples/houkokusho_sample.pdf`，点入库，等约 20-40s | "支持 PDF/TXT，自动切块向量化入库" |
-| 0:25-0:35 | 入库成功显示 chunk 数 | "264 chunk 入库完成" |
-| 0:35-0:55 | 输入日文问题 `エコセメントの経済効果試算額はいくらですか？` → rerank 模式回答 → 展开命中段落 | "日文提问，日文回答，附文档出处" |
-| 0:55-1:15 | 把检索模式切到 `vector`，重问同一题 → 回答"未找到" | "对比：纯向量检索找不到这个深埋的数值" |
-| 1:15-1:30 | 切回 `rerank` → 答对（5920億4百万円） | "rerank 模式正确回答——这就是优化的价值" |
+`Cmd + Shift + 4` 进入区域截图；按空格切换到窗口截图。
+建议把浏览器先 `Cmd + Ctrl + F` 全屏，避免书签栏、标签页泄露隐私信息。
 
-### 推荐演示题（按"vector 必败 / rerank 必胜"的稳定性排序）
+### 拍摄顺序
 
-| 推荐度 | 题目 | 期望答案 | 原文位置 |
-|------|------|------|------|
-| ★★★ | `エコセメントの経済効果試算額はいくらですか？` | 5920億4百万円 | p.61 段落末尾 |
-| ★★ | `本研究会の年間予算の総額はいくらですか？` | 拒答（资料中没有） | — |
-| ★ | `ITU-Tは何を指す略称ですか？` | 国際電気通信連合電気通信標準化部門 | p.3（**边缘命中**，rerank 偶尔失败） |
+1. **空界面** → 截 `01-overview.png`
+2. 上传 `samples/houkokusho_sample.pdf` → 点入库 → 等绿色提示出来 → 截 `02-ingest.png`
+3. 检索模式选 `rerank`，问 `エコセメントの経済効果試算額はいくらですか？` → 截 `03-rerank-answer.png`
+4. **不要清空历史**，把检索模式切到 `vector`，**重问同一题** → 此时屏幕上 vector ❌（在上）和 rerank ✅（在下）同时出现 → 截 `04-vector-vs-rerank.png`
 
-> ⚠️ **避坑**：`ITU-T 略称` 这题处于"边缘命中"区——rerank 评估时能救回，但
-> 现场跑可能因 LLM/rerank 的微小随机性而失败。录屏前先用 rerank 模式跑 2-3 遍
-> 该题确认稳定再用；不稳就换 `エコセメント` 那题。
-
-> 💡 关键叙事：**同一题，切换模式，结果不同**——这是面试看到 demo 时
-> 立刻明白"哦你真做了优化对比"的最快方式。
-
-## 推荐用工具
-
-- macOS 自带 **QuickTime**：File → New Screen Recording。导出 .mov。
-- 转 GIF（推荐两步法，调色板优化，比单步 ffmpeg 小一半）：
-
-  ```bash
-  ffmpeg -i demo.mov -vf "fps=8,scale=720:-1:flags=lanczos,palettegen" -y /tmp/palette.png
-  ffmpeg -i demo.mov -i /tmp/palette.png -lavfi "fps=8,scale=720:-1:flags=lanczos [x]; [x][1:v] paletteuse" -loop 0 docs/demo.gif
-  ```
-
-  压不够小就把 `fps=8` 降到 `6`、`scale=720` 降到 `600`。目标 ≤ 8MB。
-- 也可压成 MP4（GitHub README 现在支持直接嵌入 MP4）：
-
-  ```bash
-  ffmpeg -i demo.mov -vcodec libx264 -crf 28 -preset slow -vf "scale=1280:-2" -an docs/demo.mp4
-  ```
-
-  `crf` 越大体积越小（28 平衡，32 更小但画质降）。`-an` 去掉音轨进一步减小。
-- 不想录音：MOV/MP4 上传到 YouTube（不公开链接也行），README 嵌入封面图。
-
-## 截图清单（4 张够用）
-
-放进 `docs/screenshots/`，然后在 README 里引用。
-
-1. **整体界面**：刚打开、侧栏 + 主区都在画面里。
-2. **入库完成**：左侧显示 "已入库 1 份文档，264 chunk"。
-3. **回答 + 出处**：一道日文问题的完整回答，「依据：houkokusho_sample.pdf 第3页」清晰可见。
-4. **检索命中段落展开**：那个 expander 展开后，能看到 #1 命中段落、rerank_score 等元数据——
-   面试官一眼就懂"哦真的是基于检索答的，不是 LLM 凭空编"。
-
-## 给 README 的展示代码片段
-
-录屏完把文件放 `docs/demo.gif`、截图放 `docs/screenshots/01-*.png` 等，
-README 顶部加：
+## 放进 README 的代码片段
 
 ```markdown
 ## 演示
 
-![演示](docs/demo.gif)
+![整体界面](docs/screenshots/01-overview.png)
 
-| 上传 + 入库 | 中日问答 + 出处 | 检索命中段落 |
-|---|---|---|
-| ![](docs/screenshots/02-ingest.png) | ![](docs/screenshots/03-answer.png) | ![](docs/screenshots/04-hits.png) |
+### 优化效果对比（同一道日文问题，切换检索模式）
+
+| rerank 模式（默认） | vector 模式（基线） |
+|---|---|
+| ![](docs/screenshots/03-rerank-answer.png) | ![](docs/screenshots/04-vector-vs-rerank.png) |
+| ✅ `资料によると、エコセメントの経済効果試算額は **5920億4百万円** です（[1] p.61）。` | ❌ `資料中未找到相关内容。` |
+
+> 同一份 264 chunk 的 PDF、同一道问题，纯向量检索找不到深埋第 61 页的数值；
+> rerank 模式（向量 + BM25 + 交叉编码器）准确召回并回答。
+> 测试集 12 题，关键词命中率 **67% → 92%（+25pp）**。详见 [评估报告](docs/evaluation-report.md)。
+```
+
+## 视频（可选，不是必须）
+
+如果你想录一段用于**面试时自己 share screen**（README 不用嵌入）：
+
+- 时长 1-2 分钟，节奏：上传 → 入库 → 问题 → rerank 答对 → 切 vector 答不出 → 切回 rerank。
+- macOS QuickTime 录制；先 `Cmd + Ctrl + F` 全屏浏览器避免泄露。
+
+### 压缩命令（如有需要）
+
+```bash
+# GIF（README 用，目标 ≤8MB）
+ffmpeg -i demo.mov -vf "fps=8,scale=720:-1:flags=lanczos,palettegen" -y /tmp/palette.png
+ffmpeg -i demo.mov -i /tmp/palette.png -lavfi "fps=8,scale=720:-1:flags=lanczos [x]; [x][1:v] paletteuse" -loop 0 docs/demo.gif
+
+# MP4（小且清晰，无音轨）
+ffmpeg -i demo.mov -vcodec libx264 -crf 28 -preset slow -vf "scale=1280:-2" -an docs/demo.mp4
+
+# 顶部裁掉浏览器导航栏（150px 视情况调）
+ffmpeg -i demo.mov -vf "crop=in_w:in_h-150:0:150" -c:a copy demo-clean.mov
 ```
 
 ## 验收
 
-- [ ] 1-2 分钟的 .gif 或 .mp4
-- [ ] 4 张关键截图
-- [ ] README 能渲染出 demo（GitHub 上预览正常）
+- [x] 4 张截图（`01`-`04`）放进 `docs/screenshots/`
+- [ ] README 顶部能渲染出 demo 区块（GitHub 上预览正常）
+- [ ] _（可选）_ 视频备一段用于面试 share screen
