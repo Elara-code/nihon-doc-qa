@@ -27,11 +27,11 @@ def main() -> None:
     doc = ROOT / spec["doc"]
     questions = spec["questions"]
 
-    # 三种模式共用同一份向量库；用不同 retrieval_mode 的 pipeline
-    pipelines = {m: RagPipeline(retrieval_mode=m) for m in MODES}
-    n = pipelines["vector"].ingest([doc], reset=True)
-    for m in MODES[1:]:
-        pipelines[m].retriever.refresh()
+    # 三种模式共用同一个 pipeline / 向量库 / BM25 索引，逐题切换 retriever.mode。
+    # （不要给每个模式各建一个 RagPipeline——那样会有多个 VectorStore 实例，
+    #   其中一个 reset 重建集合后，其余实例的集合句柄就失效了。）
+    pipeline = RagPipeline()
+    n = pipeline.ingest([doc], reset=True)
     print(f"[ingest] {doc.name} -> {n} chunks\n")
 
     hit_counts = {m: 0 for m in MODES}
@@ -46,7 +46,8 @@ def main() -> None:
         lines.append("|------|------|------|")
         print(f"========== {q['id']} {q['question']} ==========")
         for m in MODES:
-            result = pipelines[m].answer(q["question"])
+            pipeline.retriever.mode = m
+            result = pipeline.answer(q["question"])
             ans = result["answer"]
             hit = keyword_hit(ans, q["expect_keywords"])
             hit_counts[m] += hit
