@@ -1,0 +1,14 @@
+# Streamlit 主题（简约风：中性配色 + 留白）
+[theme]
+primaryColor = "#1f2937"
+backgroundColor = "#ffffff"
+secondaryBackgroundColor = "#f8fafc"
+textColor = "#0f172a"
+font = "sans serif"
+
+[client]
+toolbarMode = "minimal"
+showErrorDetails = true
+
+[browser]
+gatherUsageStats = false

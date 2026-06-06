@@ -90,6 +90,6 @@ class Generator:
                 {"role": "system", "content": system},
                 {"role": "user", "content": build_user_prompt(query, hits)},
             ],
-            temperature=0.2,
+            temperature=0.0,
         )
         return resp.choices[0].message.content or ""
