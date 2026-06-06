@@ -10,6 +10,7 @@ from __future__ import annotations
 from openai import OpenAI
 
 from src.config import settings
+from src.text_utils import detect_language
 
 
 SYSTEM_PROMPT = (
@@ -18,6 +19,17 @@ SYSTEM_PROMPT = (
     "若参考资料中没有相关信息，请明确说『资料中未找到相关内容』，不要编造。"
     "回答尽量简洁，必要时引用参考资料中的原文。"
 )
+
+# 按提问语言自动适配回答语言（Day 8）
+_LANG_INSTRUCTION = {
+    "ja": "ユーザーは日本語で質問しています。必ず日本語で回答してください。",
+    "zh": "用户用中文提问，请用中文回答。",
+    "other": "请用与用户提问相同的语言回答；无法判断时默认使用中文。",
+}
+
+
+def language_instruction(query: str) -> str:
+    return _LANG_INSTRUCTION[detect_language(query)]
 
 
 def format_context(hits: list[dict]) -> str:
@@ -39,6 +51,27 @@ def build_user_prompt(query: str, hits: list[dict]) -> str:
     )
 
 
+def format_citations(hits: list[dict]) -> str:
+    """把命中 chunk 的来源去重后排成可溯源脚注。
+
+    同一文件同一页只出现一次，保持检索命中的先后顺序。
+    """
+    seen: set[tuple[str, object]] = set()
+    items: list[str] = []
+    for hit in hits:
+        meta = hit.get("metadata", {})
+        src = meta.get("source", "?")
+        page = meta.get("page", "?")
+        key = (src, page)
+        if key in seen:
+            continue
+        seen.add(key)
+        items.append(f"{src} 第{page}页")
+    if not items:
+        return ""
+    return "依据：" + "；".join(items)
+
+
 class Generator:
     def __init__(self) -> None:
         if not settings.llm_api_key:
@@ -50,10 +83,11 @@ class Generator:
         self.model = settings.llm_model
 
     def generate(self, query: str, hits: list[dict]) -> str:
+        system = f"{SYSTEM_PROMPT}\n{language_instruction(query)}"
         resp = self.client.chat.completions.create(
             model=self.model,
             messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": system},
                 {"role": "user", "content": build_user_prompt(query, hits)},
             ],
             temperature=0.2,
