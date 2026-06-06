@@ -8,15 +8,15 @@ from src.config import settings
 from src.embedding import Embedder
 from src.generator import Generator, format_citations
 from src.loader import load_and_chunk
-from src.retriever import Retriever
+from src.retriever import HybridRetriever
 from src.vectorstore import VectorStore
 
 
 class RagPipeline:
-    def __init__(self) -> None:
+    def __init__(self, retrieval_mode: str | None = None) -> None:
         self.embedder = Embedder()
         self.store = VectorStore()
-        self.retriever = Retriever(self.embedder, self.store)
+        self.retriever = HybridRetriever(self.embedder, self.store, mode=retrieval_mode)
         self._generator: Generator | None = None  # 惰性初始化，避免缺 key 时阻塞
 
     @property
@@ -31,6 +31,7 @@ class RagPipeline:
         chunks = load_and_chunk(paths, settings.chunk_size, settings.chunk_overlap)
         vectors = self.embedder.embed([c.text for c in chunks])
         self.store.add(chunks, vectors)
+        self.retriever.refresh()  # 让 BM25 索引按最新数据重建
         return len(chunks)
 
     def answer(self, query: str, top_k: int | None = None) -> dict:
