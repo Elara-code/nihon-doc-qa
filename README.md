@@ -10,7 +10,7 @@
 
 | rerank（默认） | vector（基线） |
 |---|---|
-| ![](docs/screenshots/03-rerank-answer.png) | ![](docs/screenshots/04-vector-vs-rerank.png) |
+| ![](docs/screenshots/03-answer-rerank.png) | ![](docs/screenshots/04-answer-vector.png) |
 | ✅ `エコセメントの経済効果試算額は **5920億4百万円** です（[1] p.61）。` | ❌ `資料中未找到相关内容。` |
 
 > 同一份 264 chunk 的日文 PDF、同一道问题——纯向量检索找不到深埋第 61 页的数值；
