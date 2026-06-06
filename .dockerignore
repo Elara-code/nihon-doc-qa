@@ -1,0 +1,34 @@
+# 不进镜像
+.git/
+.gitignore
+.github/
+.venv/
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# 本地数据
+chroma_db/
+.cache/
+data/
+*.sqlite3
+*.log
+
+# 本地配置（容器里用环境变量传 LLM_API_KEY）
+.env
+.env.local
+
+# 文档与素材（运行不需要）
+docs/
+README.md
+*.md
+
+# 评估输出
+eval/evaluation-report.md
+
+# 临时 / 系统文件
+.DS_Store
+.vscode/
+.idea/
+*.swp

@@ -1,3 +1,14 @@
+---
+title: 対日技術文書 RAG 問答
+emoji: 📄
+colorFrom: gray
+colorTo: indigo
+sdk: docker
+app_port: 8501
+pinned: false
+short_description: 中日双语技术文档 RAG 问答（Hybrid + Rerank）
+---
+
 # 对日技术文档智能问答系统（Nihon Doc QA）
 
 > 一个面向对日 IT 项目场景的 RAG 系统：上传日文 / 中日混排技术文档（设计书、规格书、操作手册），用自然语言提问，系统基于文档内容用中日双语回答，并标注来源出处。
