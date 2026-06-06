@@ -24,7 +24,7 @@ class Settings:
 
     # 检索模式：vector / hybrid / rerank
     #   vector = 仅向量；hybrid = 向量 + BM25（RRF 融合）；rerank = hybrid 后再用交叉编码器精排
-    retrieval_mode: str = os.getenv("RETRIEVAL_MODE", "hybrid")
+    retrieval_mode: str = os.getenv("RETRIEVAL_MODE", "rerank")
     # 融合/精排前每路召回的候选数
     candidate_k: int = int(os.getenv("CANDIDATE_K", "20"))
     # RRF 融合常数（越大越平滑，经验值 60）

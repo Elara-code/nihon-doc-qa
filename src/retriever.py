@@ -1,8 +1,8 @@
 """检索器。
 
 - Retriever：仅向量检索（Week 1 朴素版，保留作为对比基线）。
-- HybridRetriever：向量 + BM25 的 RRF 融合（Week 3 Day 11-12）。
-  通过 settings.retrieval_mode 控制：vector / hybrid。
+- HybridRetriever：向量 + BM25 的 RRF 融合，可选再接 reranker 精排（Week 3）。
+  通过 settings.retrieval_mode 控制：vector / hybrid / rerank。
 """
 from __future__ import annotations
 
@@ -58,7 +58,7 @@ def reciprocal_rank_fusion(
 
 
 class HybridRetriever:
-    """向量 + BM25 混合检索（RRF 融合）。"""
+    """向量 + BM25 混合检索；mode='rerank' 时再接交叉编码器精排。"""
 
     def __init__(
         self,
@@ -70,12 +70,21 @@ class HybridRetriever:
         self.store = store or VectorStore()
         self.mode = mode or settings.retrieval_mode
         self._bm25: BM25Index | None = None
+        self._reranker = None  # 惰性加载，重排模型较重
 
     @property
     def bm25(self) -> BM25Index:
         if self._bm25 is None:
             self._bm25 = BM25Index.from_store(self.store)
         return self._bm25
+
+    @property
+    def reranker(self):
+        if self._reranker is None:
+            from src.reranker import Reranker
+
+            self._reranker = Reranker()
+        return self._reranker
 
     def refresh(self) -> None:
         """入库后调用，丢弃缓存的 BM25 索引以便下次按新数据重建。"""
@@ -88,10 +97,14 @@ class HybridRetriever:
             vec = self.embedder.embed([query])[0]
             return self.store.search(vec, k)
 
-        # hybrid：向量 + BM25 两路各召回 candidate_k 个候选，再 RRF 融合
+        # hybrid / rerank：向量 + BM25 两路各召回 candidate_k 个候选，再 RRF 融合
         cand = settings.candidate_k
         vec = self.embedder.embed([query])[0]
         vector_hits = self.store.search(vec, cand)
         bm25_hits = self.bm25.search(query, cand)
         fused = reciprocal_rank_fusion([vector_hits, bm25_hits], settings.rrf_k)
+
+        # rerank：对融合后的候选用交叉编码器二次精排，取 top_k
+        if self.mode == "rerank":
+            return self.reranker.rerank(query, fused, top_k=k)
         return fused[:k]
