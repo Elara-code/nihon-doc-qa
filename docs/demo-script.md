@@ -45,8 +45,21 @@
 ## 推荐用工具
 
 - macOS 自带 **QuickTime**：File → New Screen Recording。导出 .mov。
-- 转 GIF：`ffmpeg -i demo.mov -vf "fps=10,scale=900:-1" -loop 0 docs/demo.gif`
-  （fps 调低、宽度压到 900px，控制在 5MB 内便于 README）。
+- 转 GIF（推荐两步法，调色板优化，比单步 ffmpeg 小一半）：
+
+  ```bash
+  ffmpeg -i demo.mov -vf "fps=8,scale=720:-1:flags=lanczos,palettegen" -y /tmp/palette.png
+  ffmpeg -i demo.mov -i /tmp/palette.png -lavfi "fps=8,scale=720:-1:flags=lanczos [x]; [x][1:v] paletteuse" -loop 0 docs/demo.gif
+  ```
+
+  压不够小就把 `fps=8` 降到 `6`、`scale=720` 降到 `600`。目标 ≤ 8MB。
+- 也可压成 MP4（GitHub README 现在支持直接嵌入 MP4）：
+
+  ```bash
+  ffmpeg -i demo.mov -vcodec libx264 -crf 28 -preset slow -vf "scale=1280:-2" -an docs/demo.mp4
+  ```
+
+  `crf` 越大体积越小（28 平衡，32 更小但画质降）。`-an` 去掉音轨进一步减小。
 - 不想录音：MOV/MP4 上传到 YouTube（不公开链接也行），README 嵌入封面图。
 
 ## 截图清单（4 张够用）
