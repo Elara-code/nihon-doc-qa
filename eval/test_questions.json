@@ -1,0 +1,90 @@
+{
+  "doc": "samples/houkokusho_sample.pdf",
+  "note": "测试文档为公开的《平成16年度標準化経済性研究会 報告書》（経済産業省，平成17年3月），非客户机密。",
+  "questions": [
+    {
+      "id": "Q1",
+      "lang": "ja",
+      "question": "TBT協定がWTO協定に包含されたのはいつですか？",
+      "expect_keywords": ["1995"],
+      "note": "缩写 + 年份，BM25 强项"
+    },
+    {
+      "id": "Q2",
+      "lang": "ja",
+      "question": "米国の国家標準化機関は何ですか？",
+      "expect_keywords": ["ANSI"],
+      "note": "缩写精确匹配，纯向量易因语义相近召回错"
+    },
+    {
+      "id": "Q3",
+      "lang": "ja",
+      "question": "EURASは何年に組織されましたか？",
+      "expect_keywords": ["1993"],
+      "note": "专有缩写 + 年份"
+    },
+    {
+      "id": "Q4",
+      "lang": "ja",
+      "question": "JNLA制度はいつ施行されましたか？",
+      "expect_keywords": ["2004"],
+      "note": "缩写检索，BM25 强项"
+    },
+    {
+      "id": "Q5",
+      "lang": "ja",
+      "question": "標準化経済性研究会の座長は誰ですか？",
+      "expect_keywords": ["土井", "関西学院"],
+      "note": "人名事实，需精确定位"
+    },
+    {
+      "id": "Q6",
+      "lang": "zh",
+      "question": "标准化经济性研究会有多少名委员？",
+      "expect_keywords": ["22"],
+      "note": "数值事实，中文问日文资料（跨语言检索）"
+    },
+    {
+      "id": "Q7",
+      "lang": "ja",
+      "question": "改正工業標準化法の施行予定はいつですか？",
+      "expect_keywords": ["2005"],
+      "note": "年份事实"
+    },
+    {
+      "id": "Q8",
+      "lang": "zh",
+      "question": "第4章列举了哪些把标准化纳入事业战略的成功案例？",
+      "expect_keywords": ["DVD", "自動車", "携帯"],
+      "note": "聚合/列举型，跨多 chunk，rerank 强项"
+    },
+    {
+      "id": "Q9",
+      "lang": "ja",
+      "question": "標準化経済性研究会の検討範囲はいくつの項目に整理されていますか？",
+      "expect_keywords": ["8", "８", "八"],
+      "note": "聚合型，答案是一段编号列表"
+    },
+    {
+      "id": "Q10",
+      "lang": "ja",
+      "question": "エコセメントの経済効果試算額はいくらですか？",
+      "expect_keywords": ["5920"],
+      "note": "数值精确检索，深埋在第5章"
+    },
+    {
+      "id": "Q11",
+      "lang": "ja",
+      "question": "ITU-Tは何を指す略称ですか？",
+      "expect_keywords": ["電気通信"],
+      "note": "缩写定义"
+    },
+    {
+      "id": "Q12",
+      "lang": "ja",
+      "question": "本研究会の年間予算の総額はいくらですか？",
+      "expect_keywords": ["未找到", "ありません", "記載", "見つかりません", "情報"],
+      "note": "资料中不存在，检验是否拒答而非编造"
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+# Env
+.env
+.env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.python-version
+
+# IDE
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Data / artifacts
+data/
+chroma_db/
+*.sqlite3
+*.log
+
+# Notebooks
+.ipynb_checkpoints/
+
+# Models cache
+.cache/
+models/
