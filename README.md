@@ -30,7 +30,8 @@ short_description: 中日双语技术文档 RAG 问答（Hybrid + Rerank）
 > **测试集 12 题：关键词命中率 67% → 92%（+25 pp）；LLM-as-judge 通过率 83% → 92%**。
 > 评估方法详见 [`docs/evaluation-report.md`](docs/evaluation-report.md)。
 
-> 🚧 在线试用：将在部署到 Hugging Face Spaces 后补充链接。
+> 🚀 **在线试用**：[huggingface.co/spaces/elara1008/nihon-doc-qa](https://huggingface.co/spaces/elara1008/nihon-doc-qa)
+> （免费 CPU 层，rerank 模式延迟较高，建议先用 vector / hybrid 体验，详见下方"性能 / 延迟"表）
 
 ---
 
