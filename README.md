@@ -217,6 +217,25 @@ docker run --rm -p 8501:8501 \
 挂载 `.cache` 是为了让 bge-m3 / reranker 只下载一次。详见
 [`docs/deployment.md`](docs/deployment.md)（含 Hugging Face Spaces 部署步骤）。
 
+### 性能 / 延迟（按硬件分档）
+
+bge-reranker-v2-m3 是 cross-encoder，需要对每个候选跑完整 Transformer forward pass。
+**纯向量（双塔）模式可以在 CPU 上秒级返回，rerank 模式对硬件敏感**：
+
+| 硬件 | rerank 模式单次问答 | vector / hybrid 模式 |
+|---|---|---|
+| 本地 Mac（M 系列，有 AMX/NEON 加速） | **4-8 秒** | 1-2 秒 |
+| HF Spaces CPU Basic（2 vCPU，免费层） | **40-60 秒**（首次含模型加载 ~150 秒）| 2-3 秒 |
+| HF Spaces CPU Upgrade（~$0.03/h） | 10-20 秒 | 1-2 秒 |
+| 任何 GPU（T4 / L4 / A10） | **1-2 秒** | < 1 秒 |
+
+**这是有意的选型 trade-off**：为了达到 92% 的命中率选择了较重的 cross-encoder rerank
+模型，代价是在免费 CPU 层延迟较高。生产环境会用 GPU 或换更小的 reranker
+（`bge-reranker-base` 约 1/2 大小，速度翻倍但中日多语言能力略降）。
+
+> 在线 demo（HF Spaces 免费层）建议用 `vector` 或 `hybrid` 模式做快速体验，
+> rerank 模式仅用于演示"完整管线 + 最高准确率"。
+
 ---
 
 ## 项目结构
@@ -265,6 +284,7 @@ nihon-doc-qa/
 | 对话历史 | 单轮问答，不支持多轮追问 | 待加 |
 | 表格 / 图片 | PDF 中的表格和图片暂未识别 | 待加 OCR + 视觉理解 |
 | 持续评估 | 现仅 12 题手工标注集 | 待扩到 50+ 题 + 自动回归 |
+| 推理延迟 | rerank 模式在 HF CPU Basic 上 40-60 秒/次（详见上方"性能 / 延迟"表） | 生产环境用 GPU 或换小型 reranker |
 
 工程判断详见各 `docs/weekN-notes.md`。
 
