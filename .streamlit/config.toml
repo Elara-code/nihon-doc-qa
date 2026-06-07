@@ -12,3 +12,13 @@ showErrorDetails = true
 
 [browser]
 gatherUsageStats = false
+
+# 反代部署（HF Spaces）下的必备配置：
+# - enableCORS / enableXsrfProtection 关掉，否则文件上传走 HF 反代会被 403
+# - fileWatcherType=none 关 watcher，避免误扫 transformers vision 模块报错
+# - 这里写在 config.toml 比 CLI 参数更稳，避免被覆盖
+[server]
+enableCORS = false
+enableXsrfProtection = false
+fileWatcherType = "none"
+headless = true
