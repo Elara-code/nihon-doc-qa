@@ -33,8 +33,14 @@ COPY samples/ ./samples/
 EXPOSE 8501
 
 # Streamlit 需要监听 0.0.0.0 才能从容器外访问
+# enableCORS / enableXsrfProtection 关掉，HF Spaces 反向代理下 XSRF 检查会
+#   误拒上传请求（403）
+# fileWatcherType=none 关掉文件监视器，避免 transformers vision 模块的误扫报错
 CMD ["streamlit", "run", "app.py", \
      "--server.address=0.0.0.0", \
      "--server.port=8501", \
      "--server.headless=true", \
+     "--server.enableCORS=false", \
+     "--server.enableXsrfProtection=false", \
+     "--server.fileWatcherType=none", \
      "--browser.gatherUsageStats=false"]
