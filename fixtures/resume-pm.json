@@ -1,0 +1,7 @@
+{
+  "basics": { "name": "Jane", "email": "jane@example.com", "phone": "123", "location": "Beijing", "summary": "PM", "links": [] },
+  "education": [],
+  "experience": [{ "id": "exp-1", "company": "Beta", "title": "PM", "start": "2021", "end": "2024", "location": "Beijing", "bullets": ["Owned roadmap and delivery"] }],
+  "skills": [{ "category": "PM", "items": ["roadmap", "stakeholder management"] }],
+  "certifications": []
+}
